@@ -10,8 +10,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-const char* WIFI_SSID = "Redmi 12 5G";
-const char* WIFI_PASS = "YOUR_HOTSPOT_PASSWORD";   // <-- put your real password here
+const char* WIFI_SSID = "Eshan & Sandhia_2.4G";
+const char* WIFI_PASS = "Bpnplwse@8";
 
 const char* MQTT_BROKER = "broker.hivemq.com";
 const int   MQTT_PORT   = 1883;
@@ -86,6 +86,10 @@ void loop(){
       float tilt = getVal(line, "tilt");
       int   stopf= (int)getVal(line, "stop");
 
+      // fake O2: normal air ~20.9%, dips as CH4 rises (methane displaces oxygen)
+      float o2 = 20.9 - (ch4 * 1.2) - random(0, 30) / 100.0;
+      if (o2 < 17.5) o2 = 17.5;
+
       lastRssi = (WiFi.status()==WL_CONNECTED) ? WiFi.RSSI() : -100;
 
       bool drop = false;
@@ -97,6 +101,7 @@ void loop(){
       String payload = "{";
       payload += "\"ch4\":"  + String(ch4,2)  + ",";
       payload += "\"co\":"   + String(co,1)   + ",";
+      payload += "\"o2\":"   + String(o2,1)   + ",";
       payload += "\"temp\":" + String(temp,1) + ",";
       payload += "\"tilt\":" + String(tilt,1) + ",";
       payload += "\"rssi\":" + String(lastRssi) + ",";

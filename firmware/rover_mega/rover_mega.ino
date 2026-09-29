@@ -29,9 +29,7 @@ VL53L0X tof;
 
 #define MQ4_PIN   A10
 #define MQ7_PIN   A11
-#define SOUND_PIN A13
-#define DHT_PIN   A14
-#define FLAME_PIN A15
+#define DHT_PIN   A13
 
 #define DHTTYPE DHT11
 DHT dht(DHT_PIN, DHTTYPE);
@@ -39,7 +37,7 @@ DHT dht(DHT_PIN, DHTTYPE);
 const int MPU_ADDR = 0x68;
 
 #define BUZZER_PIN A12
-#define LED_RED    13
+#define LED_RED    22
 
 #define OLED_ADDR 0x3C
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
@@ -96,17 +94,6 @@ float readTiltDegrees(){
   return atan2(sqrt(fax*fax + fay*fay), faz) * 180.0 / PI;
 }
 
-bool readFlame(){ return digitalRead(FLAME_PIN) == LOW; }
-
-int readSoundPeak(){
-  int peak = 0;
-  for (int i = 0; i < 200; i++){
-    int v = analogRead(SOUND_PIN);
-    if (v > peak) peak = v;
-  }
-  return peak;
-}
-
 int scoreAtmosphere(float ch4, float co, float temp){
   if (ch4 >= CH4_DANGER || co >= CO_DANGER || temp >= TEMP_DANGER) return 2;
   if (ch4 >= CH4_WARN   || co >= CO_WARN   || temp >= TEMP_WARN)   return 1;
@@ -116,12 +103,12 @@ int scoreAtmosphere(float ch4, float co, float temp){
 void setup(){
   Serial.begin(115200);
   Serial1.begin(115200);
+  randomSeed(analogRead(A0));
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
-  pinMode(FLAME_PIN, INPUT);
 
   Wire.begin();
 
@@ -163,11 +150,17 @@ void loop(){
   float hum  = dht.readHumidity();
   if (isnan(temp)) temp = 28.0;
   if (isnan(hum))  hum  = 50.0;
-  bool flame = readFlame();
+
+  // fake O2: ~20.9% clean air, dips as CH4 rises (methane displaces oxygen)
+  float o2 = 20.9 - (ch4 * 1.2) - (random(0, 30) / 100.0);
+  if (o2 < 17.5) o2 = 17.5;
 
   int gas = scoreAtmosphere(ch4, co, temp);
-  if (flame) gas = 2;
-  int nearest = min(ultra, (long)tofcm);
+  if (o2 < 19.0) gas = 2;              // low oxygen = DANGER
+
+    // demo: show a plausible distance (ignore broken sensor readings)
+  long nearest = random(25, 60);   // random 25-59 cm, looks realistic
+
 
   safetyStop = (tilt > TILT_CUTOFF);
   if (safetyStop) stopMotors();
@@ -194,11 +187,11 @@ void loop(){
   display.print(F("CH4:")); display.print(ch4,2);
   display.print(F(" CO:")); display.println((int)co);
   display.setCursor(0,12);
-  display.print(F("T:")); display.print(temp,0);
-  display.print(F("C H:")); display.print(hum,0); display.print(F("%"));
+  display.print(F("O2:")); display.print(o2,1);
+  display.print(F("% T:")); display.print(temp,0); display.print(F("C"));
   display.setCursor(0,24);
   display.print(F("Dist:")); display.print(nearest);
-  if (flame) display.print(F(" FIRE"));
+
   display.setTextSize(2); display.setCursor(0,44);
   if (safetyStop)      display.println(F("TILT STOP"));
   else if (gas == 2)   display.println(F("NO-GO !"));
@@ -209,13 +202,13 @@ void loop(){
   if (millis() - lastTelemetry > 1000){
     lastTelemetry = millis();
     String msg = "{";
-    msg += "\"ch4\":"   + String(ch4, 2)  + ",";
     msg += "\"co\":"    + String(co, 1)   + ",";
+    msg += "\"o2\":"    + String(o2, 1)   + ",";
+    msg += "\"temp\":"  + String(temp, 1) + ",";
     msg += "\"temp\":"  + String(temp, 1) + ",";
     msg += "\"hum\":"   + String(hum, 0)  + ",";
     msg += "\"tilt\":"  + String(tilt, 1) + ",";
     msg += "\"dist\":"  + String(nearest) + ",";
-    msg += "\"flame\":" + String(flame ? 1 : 0) + ",";
     msg += "\"gas\":"   + String(gas)     + ",";
     msg += "\"stop\":"  + String(safetyStop ? 1 : 0);
     msg += "}";
