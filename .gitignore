@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ML artifacts (regenerate with the scripts)
+ml/prahari_model.joblib
+ml/ml_report.png
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Arduino build
+build/
+*.hex
