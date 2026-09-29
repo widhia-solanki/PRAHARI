@@ -3,17 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PRAHARI · Control Station</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+<title>PRAHARI Control Station</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
-<!-- MQTT over WebSockets -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- ================= HEADER ================= -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">P</div>
@@ -24,14 +20,13 @@
     </div>
     <div class="conn">
       <span id="dot" class="dot offline"></span>
-      <span id="connText">Connecting…</span>
-      <button id="simBtn" class="sim-btn" title="Run a scripted demo without hardware">▶ Demo Mode</button>
+      <span id="connText">Connecting...</span>
+      <button id="simBtn" class="sim-btn">Demo Mode</button>
     </div>
   </header>
 
-  <!-- ================= GO / NO-GO BANNER ================= -->
   <div id="verdict" class="verdict safe">
-    <div class="verdict-icon">✓</div>
+    <div class="verdict-icon">OK</div>
     <div class="verdict-text">
       <strong id="verdictTitle">ATMOSPHERE SAFE — GO</strong>
       <span id="verdictSub">All gases within DGMS statutory limits</span>
@@ -43,21 +38,83 @@
   </div>
 
   <main class="grid">
-    <!-- ---------- GAS GAUGES ---------- -->
     <section class="card gauges">
       <h2>Gas Sensing <small>scored vs DGMS / CMR 2017 limits</small></h2>
       <div class="gauge-row">
         <div class="gauge" id="g-ch4">
-          <div class="g-name">CH₄ Methane</div>
+          <div class="g-name">CH4 Methane</div>
           <div class="g-val"><span id="ch4">0.00</span><i>%</i></div>
           <div class="g-bar"><div class="g-fill" id="ch4bar"></div></div>
           <div class="g-limit">DGMS limit &lt; 1.25%</div>
         </div>
         <div class="gauge" id="g-co">
-          <div class="g-name">CO Carbon&nbsp;Monoxide</div>
+          <div class="g-name">CO Carbon Monoxide</div>
           <div class="g-val"><span id="co">0</span><i>ppm</i></div>
           <div class="g-bar"><div class="g-fill" id="cobar"></div></div>
-          <div class="g-limit">DGMS limit ≤ 50 ppm</div>
+          <div class="g-limit">DGMS limit <= 50 ppm</div>
         </div>
         <div class="gauge" id="g-temp">
           <div class="g-name">Temperature</div>
+          <div class="g-val"><span id="temp">0</span><i>C</i></div>
+          <div class="g-bar"><div class="g-fill" id="tempbar"></div></div>
+          <div class="g-limit">Elevated > 45 C</div>
+        </div>
+        <div class="gauge" id="g-tilt">
+          <div class="g-name">Rover Tilt</div>
+          <div class="g-val"><span id="tilt">0</span><i>deg</i></div>
+          <div class="g-bar"><div class="g-fill" id="tiltbar"></div></div>
+          <div class="g-limit">Cut-off > 35 deg</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card ai">
+      <h2>AI Perception <small>edge + station fusion</small></h2>
+      <div id="victim" class="victim none">
+        <div class="v-icon">?</div>
+        <div>
+          <strong id="victimTitle">Scanning...</strong>
+          <span id="victimSub">No thermal/motion signature detected</span>
+        </div>
+      </div>
+      <div class="ai-pred">
+        <div class="pred-label">ML Gas-Trend Forecast</div>
+        <div id="predBadge" class="pred-badge stable">STABLE</div>
+        <div class="pred-detail" id="predDetail">Rate-of-rise within normal bounds.</div>
+      </div>
+    </section>
+
+    <section class="card cam">
+      <h2>Live Camera <small>ESP32-CAM</small></h2>
+      <div class="cam-wrap">
+        <img id="camFeed" alt="camera feed" />
+        <div id="camPlaceholder" class="cam-ph">
+          <span>CAM</span>
+          <p>Enter ESP32-CAM stream URL to connect</p>
+          <div class="cam-input">
+            <input id="camUrl" placeholder="http://192.168.x.x:81/stream" />
+            <button id="camBtn">Connect</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card chart">
+      <h2>Gas Trend <small>live · rolling 60 s</small></h2>
+      <canvas id="trend"></canvas>
+    </section>
+
+    <section class="card log">
+      <h2>Breadcrumb Mesh & Event Log</h2>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="logbox" id="logbox"></div>
+    </section>
+  </main>
+
+  <footer>
+    PRAHARI runs 100% offline-capable · MQTT over local pit-head LAN · Black-box logging active
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
