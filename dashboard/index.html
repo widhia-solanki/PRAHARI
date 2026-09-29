@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PRAHARI · Control Station</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<!-- MQTT over WebSockets -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ================= HEADER ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">P</div>
+      <div>
+        <h1>PRAHARI <span>Control Station</span></h1>
+        <p class="sub">Portable Rover for Autonomous Hazard Assessment &amp; Rescue Intelligence · Team Cipher · SIH26039</p>
+      </div>
+    </div>
+    <div class="conn">
+      <span id="dot" class="dot offline"></span>
+      <span id="connText">Connecting…</span>
+      <button id="simBtn" class="sim-btn" title="Run a scripted demo without hardware">▶ Demo Mode</button>
+    </div>
+  </header>
+
+  <!-- ================= GO / NO-GO BANNER ================= -->
+  <div id="verdict" class="verdict safe">
+    <div class="verdict-icon">✓</div>
+    <div class="verdict-text">
+      <strong id="verdictTitle">ATMOSPHERE SAFE — GO</strong>
+      <span id="verdictSub">All gases within DGMS statutory limits</span>
+    </div>
+    <div class="verdict-meta">
+      <div>Mission time <b id="missionTime">00:00</b></div>
+      <div>Depth (est.) <b id="depth">0.0 m</b></div>
+    </div>
+  </div>
+
+  <main class="grid">
+    <!-- ---------- GAS GAUGES ---------- -->
+    <section class="card gauges">
+      <h2>Gas Sensing <small>scored vs DGMS / CMR 2017 limits</small></h2>
+      <div class="gauge-row">
+        <div class="gauge" id="g-ch4">
+          <div class="g-name">CH₄ Methane</div>
+          <div class="g-val"><span id="ch4">0.00</span><i>%</i></div>
+          <div class="g-bar"><div class="g-fill" id="ch4bar"></div></div>
+          <div class="g-limit">DGMS limit &lt; 1.25%</div>
+        </div>
+        <div class="gauge" id="g-co">
+          <div class="g-name">CO Carbon&nbsp;Monoxide</div>
+          <div class="g-val"><span id="co">0</span><i>ppm</i></div>
+          <div class="g-bar"><div class="g-fill" id="cobar"></div></div>
+          <div class="g-limit">DGMS limit ≤ 50 ppm</div>
+        </div>
+        <div class="gauge" id="g-temp">
+          <div class="g-name">Temperature</div>
