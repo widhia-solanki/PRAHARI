@@ -10,8 +10,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-const char* WIFI_SSID = "Eshan & Sandhia_2.4G";
-const char* WIFI_PASS = "Bpnplwse@8";
+const char* WIFI_SSID = "";
+const char* WIFI_PASS = "";
 
 const char* MQTT_BROKER = "broker.hivemq.com";
 const int   MQTT_PORT   = 1883;
