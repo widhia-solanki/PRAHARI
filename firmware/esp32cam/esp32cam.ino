@@ -18,8 +18,8 @@
 // WIFI
 // ─────────────────────────────────────────────────────────────────────────────
 
-const char* WIFI_SSID = "Eshan & Sandhia_2.4G";
-const char* WIFI_PASS = "Bpnplwse@8";
+const char* WIFI_SSID = "";
+const char* WIFI_PASS = "";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AI THINKER ESP32-CAM PIN MAP
