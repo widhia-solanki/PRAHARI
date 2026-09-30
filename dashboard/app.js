@@ -28,7 +28,7 @@ const trend = new Chart(ctx, {
     plugins:{ legend:{ labels:{ color:"#94a3b8", font:{size:11} } } },
     scales:{
       x:{ ticks:{ color:"#64748b", font:{size:9} }, grid:{ color:"#1f2937" } },
-      y:{ position:"left", ticks:{ color:"#f5a623", font:{size:9} }, grid:{ color:"#1f2937" }, title:{display:true,text:"CH4 %",color:"#f5a623",font:{size:9}} },
+            y:{ position:"left", min:0, max:1.5, ticks:{ color:"#f5a623", font:{size:9} }, grid:{ color:"#1f2937" }, title:{display:true,text:"CH4 %",color:"#f5a623",font:{size:9}} },
       y1:{ position:"right", ticks:{ color:"#3b82f6", font:{size:9} }, grid:{ drawOnChartArea:false }, title:{display:true,text:"CO ppm",color:"#3b82f6",font:{size:9}} }
     }
   }
